@@ -49,16 +49,37 @@ impl PyGaussianNB {
         Ok(Self { inner, parameters })
     }
 
-    pub fn fit(&mut self, x: &PyArray2<f64>, y: &PyArray1<f64>) -> PyResult<()> {
-        let x = x.readonly().as_array().into_owned();
-        let y = y.readonly().as_array().into_owned();
+    pub fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+        let x = if let Ok(x) = x.extract::<&PyArray2<f64>>() {
+            x.to_owned_array()
+        } else if let Ok(x) = x.extract::<&PyArray2<i64>>() {
+            x.cast::<f64>(false).unwrap().to_owned_array()
+        } else {
+            todo!("This should return an input error")
+        };
+
+        let y = if let Ok(y) = y.extract::<&PyArray1<f64>>() {
+            y.to_owned_array()
+        } else if let Ok(y) = y.extract::<&PyArray1<i64>>() {
+            y.cast::<f64>(false).unwrap().to_owned_array()
+        } else {
+            todo!("This should return an input error")
+        };
+
         let gnb = GaussianNB::<f64, Array2<f64>>::fit(&x, &y, self.parameters.clone()).unwrap();
         self.inner = Some(gnb);
         Ok(())
     }
 
-    pub fn predict(&self, x: &PyArray2<f64>) -> PyResult<Py<PyArray1<f64>>> {
-        let x = x.readonly().as_array().into_owned();
+    pub fn predict(&self, x: &PyAny) -> PyResult<Py<PyArray1<f64>>> {
+        let x = if let Ok(x) = x.extract::<&PyArray2<f64>>() {
+            x.to_owned_array()
+        } else if let Ok(x) = x.extract::<&PyArray2<i32>>() {
+            x.cast::<f64>(false).unwrap().to_owned_array()
+        } else {
+            todo!("This should return an input error")
+        };
+
         let array = self.inner.as_ref().unwrap().predict(&x).unwrap();
         let gil = Python::acquire_gil();
         let py = gil.python();
