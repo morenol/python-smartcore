@@ -67,4 +67,9 @@ impl PyGaussianNB {
         let py = gil.python();
         Ok(array.into_pyarray(py).to_owned())
     }
+
+    pub fn to_json(&self) -> PyResult<String> {
+        let gnb = self.inner.as_ref().unwrap().clone();
+        Ok(serde_json::to_string(&gnb).unwrap())
+    }
 }
