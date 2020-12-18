@@ -1,0 +1,43 @@
+name: Python
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    name: Check everything builds & tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: [3.6, 3.7, 3.8]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: "x64"
+
+      - name: Install
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install pytest setuptools_rust numpy scikit-learn
+          python setup.py develop
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          pytest smartcore

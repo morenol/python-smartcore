@@ -69,7 +69,7 @@ impl PyGaussianNB {
     }
 
     pub fn to_json(&self) -> PyResult<String> {
-        let gnb = self.inner.as_ref().unwrap().clone();
+        let gnb = self.inner.as_ref().unwrap();
         Ok(serde_json::to_string(&gnb).unwrap())
     }
 }
