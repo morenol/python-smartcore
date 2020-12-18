@@ -12,8 +12,8 @@ Instruction to use this in python:
 import numpy as np
 X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
 Y = np.array([1, 1, 1, 2, 2, 2])
-from smartcore import naive_bayes
-clf = naive_bayes.GaussianNB()
+from smartcore.naive_bayes import GaussianNB
+clf = GaussianNB()
 clf.fit(X, Y)
 
 print(clf.predict(np.array([[-0.8, -1]])))
