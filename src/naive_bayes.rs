@@ -4,7 +4,7 @@ use numpy::IntoPyArray;
 use numpy::{PyArray1, PyArray2};
 use pyo3::prelude::*;
 use pyo3::types::*;
-use smartcore::naive_bayes::{GaussianNB, GaussianNBParameters};
+use smartcore::naive_bayes::gaussian::{GaussianNB, GaussianNBParameters};
 
 #[pyclass(module = "smartcore.naive_bayes", name=GaussianNB)]
 pub struct PyGaussianNB {
